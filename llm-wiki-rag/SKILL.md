@@ -19,7 +19,7 @@ Use exec tool to run the scripts:
 
 ```bash
 # Ask a question (outputs structured JSON)
-python3 /Users/blackmount8/.openclaw/workspace/_repository/llm-wiki-rag/scripts/answer.py "<question>" --top-k 5
+python3 /Users/user_name/.openclaw/workspace/_repository/llm-wiki-rag/scripts/answer.py "<question>" --top-k 5
 ```
 
 ## Search Tips
@@ -39,9 +39,24 @@ python3 /Users/blackmount8/.openclaw/workspace/_repository/llm-wiki-rag/scripts/
 
 ## Wiki Location
 
+The skill automatically discovers your wiki with this priority:
+
+1. **`WIKI_PATH`** environment variable — explicit path
+2. **`~/.ai-skills-wiki`** file — contains wiki path (one line)
+3. Common paths checked for `WIKI.md`:
+   - `~/.ai-skills/wiki`
+   - `~/Documents/ai-skills-wiki`
+   - `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/llm-wiki/` (Obsidian iCloud)
+   - `~/obsidian/llm-wiki`
+   - `/llm-wiki`
+4. Current working directory (if it contains `WIKI.md`)
+
+**To set a custom wiki:**
+```bash
+export WIKI_PATH=/path/to/your/wiki
 ```
-~/Library/Mobile Documents/iCloud~md~obsidian/Documents/llm-wiki/
-```
+
+Or create `~/.ai-skills-wiki` with the path on a single line.
 
 ## Scripts
 
@@ -65,7 +80,7 @@ Source: pages/concepts/harness-design.md
 ## Example Invocation
 
 ```bash
-python3 /Users/blackmount8/.openclaw/workspace/_repository/llm-wiki-rag/scripts/answer.py "harness design" --top-k 3
+python3 answer.py "harness design" --top-k 3
 ```
 
 Parse the JSON output, extract `context` and `sources`, then synthesize an answer.

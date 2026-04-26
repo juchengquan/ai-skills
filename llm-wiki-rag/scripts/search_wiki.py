@@ -10,7 +10,49 @@ import json
 import argparse
 from pathlib import Path
 
-WIKI_VAULT = Path(os.path.expanduser("~/Library/Mobile Documents/iCloud~md~obsidian/Documents/llm-wiki"))
+
+def find_wiki():
+    """Auto-discover wiki location by searching common paths."""
+    # 1. WIKI_PATH environment variable (highest priority)
+    wiki_path = os.environ.get("WIKI_PATH")
+    if wiki_path:
+        wiki = Path(wiki_path)
+        if (wiki / "WIKI.md").exists():
+            return wiki
+        if wiki.is_dir():
+            return wiki
+
+    # 2. .ai-skills-wiki file in home directory
+    config_file = Path.home() / ".ai-skills-wiki"
+    if config_file.exists():
+        wiki_path = config_file.read_text().strip()
+        wiki = Path(wiki_path)
+        if wiki.exists() and (wiki / "WIKI.md").exists():
+            return wiki
+
+    # 3. Common wiki paths
+    search_paths = [
+        Path(os.path.expanduser("~/.ai-skills/wiki")),
+        Path(os.path.expanduser("~/Documents/ai-skills-wiki")),
+        Path(os.path.expanduser("~/Library/Mobile Documents/iCloud~md~obsidian/Documents/llm-wiki")),
+        Path(os.path.expanduser("~/obsidian/llm-wiki")),
+        Path("/llm-wiki"),
+    ]
+
+    # 4. Check cwd for WIKI.md
+    cwd = Path.cwd()
+    if (cwd / "WIKI.md").exists():
+        return cwd
+
+    for search_path in search_paths:
+        if (search_path / "WIKI.md").exists():
+            return search_path
+
+    # Fallback to default Obsidian path
+    return search_paths[2]
+
+
+WIKI_VAULT = find_wiki()
 PAGES_DIR = WIKI_VAULT / "pages"
 
 
